@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Borat — Language Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #12203a;
+    --navy-mid: #1e3358;
+    --navy-light: #2c4a7a;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --gold-pale: #f7edcc;
+    --cream: #faf6ec;
+    --white: #ffffff;
+    --text: #1a1a1a;
+    --text-mid: #444;
+    --text-soft: #777;
+    --red: #b33a3a;
+    --green: #2d7a4a;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.10);
+  }
+
+  html { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+  body { min-height: 100vh; }
+
+  /* ── NAV ─────────────────────────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 60px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; color: var(--gold); letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab {
+    background: none; border: none; cursor: pointer;
+    padding: 6px 16px; border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 500;
+    color: rgba(255,255,255,.6); transition: all .2s;
+  }
+  .nav-tab:hover { color: var(--gold-light); background: rgba(255,255,255,.06); }
+  .nav-tab.active { color: var(--navy); background: var(--gold); }
+  .nav-progress {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .8rem; color: rgba(255,255,255,.55);
+  }
+  .progress-bar-wrap { width: 90px; height: 5px; background: rgba(255,255,255,.15); border-radius: 10px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--gold); border-radius: 10px; transition: width .4s ease; }
+
+  /* ── PAGES ───────────────────────────────────────────── */
+  .page { display: none; animation: fadeIn .3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ── HERO ─────────────────────────────────────────────── */
+  .hero {
+    position: relative; overflow: hidden;
+    background: var(--navy);
+    min-height: 420px; display: flex; align-items: center;
+  }
+  .hero-bg-img {
+    position: absolute; inset: 0;
+    background-image: url('https://fwcdn.pl/fpo/13/83/291383/7535967_2.3.jpg');
+    background-size: cover; background-position: center 20%;
+    opacity: .22;
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 680px; padding: 3rem 2.5rem;
+  }
+  .hero-eyebrow {
+    font-size: .75rem; font-weight: 500; letter-spacing: .12em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: .75rem;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem); color: var(--white);
+    line-height: 1.1; margin-bottom: .5rem;
+  }
+  .hero-title em { color: var(--gold); font-style: italic; }
+  .hero-sub { font-size: 1rem; font-weight: 300; color: rgba(255,255,255,.7); line-height: 1.7; max-width: 520px; margin-bottom: 2rem; }
+  .hero-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .hero-chip {
+    padding: 5px 14px; border-radius: 99px;
+    border: 1px solid var(--gold); color: var(--gold);
+    font-size: .78rem; font-weight: 500; background: rgba(201,168,76,.1);
+  }
+
+  /* ── CONTENT WRAPPER ─────────────────────────────────── */
+  .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* ── FILM INFO SECTION ───────────────────────────────── */
+  .film-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;
+  }
+  @media(max-width:680px) { .film-grid { grid-template-columns: 1fr; } }
+
+  .info-card {
+    background: var(--white); border-radius: var(--radius);
+    border: 1px solid rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .info-card-img { width: 100%; height: 220px; object-fit: cover; display: block; }
+  .info-card-body { padding: 1.25rem; }
+  .info-card-label { font-size: .7rem; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: var(--gold); margin-bottom: .4rem; }
+  .info-card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--navy); margin-bottom: .5rem; }
+  .info-card-text { font-size: .88rem; color: var(--text-mid); line-height: 1.7; }
+
+  .about-block {
+    background: var(--navy); border-radius: var(--radius);
+    padding: 1.75rem 2rem; margin-bottom: 2rem;
+    border-left: 4px solid var(--gold);
+  }
+  .about-block h3 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; margin-bottom: .75rem; }
+  .about-block p { color: rgba(255,255,255,.8); font-size: .9rem; line-height: 1.75; }
+  .about-block strong { color: var(--gold-light); font-weight: 500; }
+
+  /* ── SECTION TITLES ───────────────────────────────────── */
+  .section-title {
+    font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--navy);
+    margin-bottom: 1.25rem; padding-bottom: .6rem;
+    border-bottom: 2px solid var(--gold-pale);
+  }
+  .section-title span { color: var(--gold); }
+
+  /* ── VOCAB GRID ──────────────────────────────────────── */
+  .vocab-search-wrap { position: relative; margin-bottom: 1.25rem; }
+  .vocab-search {
+    width: 100%; padding: 10px 16px 10px 42px; border-radius: 8px;
+    border: 1.5px solid rgba(0,0,0,.12); font-family: inherit; font-size: .9rem;
+    background: var(--white); outline: none; transition: border-color .2s;
+  }
+  .vocab-search:focus { border-color: var(--gold); }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-soft); font-size: 16px; pointer-events: none; }
+
+  .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 1rem; }
+  .vocab-card {
+    background: var(--white); border-radius: var(--radius);
+    border: 1px solid rgba(0,0,0,.07);
+    padding: 1.1rem 1.2rem; cursor: pointer;
+    transition: all .2s; position: relative; overflow: hidden;
+  }
+  .vocab-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%; background: var(--gold);
+    border-radius: 0; transform: scaleY(0); transition: transform .2s;
+    transform-origin: bottom;
+  }
+  .vocab-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.09); transform: translateY(-2px); }
+  .vocab-card:hover::before, .vocab-card.open::before { transform: scaleY(1); }
+  .vocab-card.open { border-color: var(--gold); background: var(--gold-pale); }
+  .vocab-word { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--navy); margin-bottom: 2px; }
+  .vocab-pos { font-size: .72rem; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: var(--text-soft); }
+  .vocab-definition { font-size: .87rem; color: var(--text-mid); line-height: 1.6; margin-top: .6rem; }
+  .vocab-example { font-size: .83rem; color: var(--navy-light); font-style: italic; margin-top: .5rem; line-height: 1.55; }
+  .vocab-note { font-size: .78rem; color: var(--text-soft); margin-top: .5rem; line-height: 1.5; background: rgba(0,0,0,.04); border-radius: 6px; padding: 6px 8px; }
+  .vocab-expand { display: none; }
+  .vocab-card.open .vocab-expand { display: block; }
+  .vocab-arrow { float: right; color: var(--gold); font-size: .9rem; transition: transform .2s; }
+  .vocab-card.open .vocab-arrow { transform: rotate(180deg); }
+
+  /* ── PHRASES ────────────────────────────────────────── */
+  .phrases-list { display: flex; flex-direction: column; gap: .75rem; }
+  .phrase-row {
+    background: var(--white); border-radius: 10px; border: 1px solid rgba(0,0,0,.07);
+    display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.25rem;
+    transition: all .2s;
+  }
+  .phrase-row:hover { box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+  .phrase-tag { background: var(--navy); color: var(--gold); border-radius: 6px; padding: 4px 10px; font-size: .78rem; font-weight: 500; white-space: nowrap; margin-top: 2px; }
+  .phrase-text strong { font-size: .93rem; color: var(--navy); display: block; margin-bottom: 3px; }
+  .phrase-text span { font-size: .84rem; color: var(--text-mid); line-height: 1.6; }
+
+  /* ── EXERCISES PAGE ──────────────────────────────────── */
+  .ex-hero {
+    background: var(--navy);
+    position: relative; overflow: hidden;
+    padding: 2.5rem 2.5rem 2rem;
+  }
+  .ex-hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Borat_in_Cologne.jpg/250px-Borat_in_Cologne.jpg');
+    background-size: cover; background-position: center;
+    opacity: .18;
+  }
+  .ex-hero-content { position: relative; z-index: 2; }
+  .ex-hero h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--white); margin-bottom: .5rem; }
+  .ex-hero h2 em { color: var(--gold); font-style: italic; }
+  .ex-hero p { color: rgba(255,255,255,.65); font-size: .9rem; max-width: 560px; line-height: 1.7; }
+
+  .ex-steps-bar {
+    display: flex; gap: 0; margin: 2rem 0 2rem;
+    background: var(--white); border-radius: 10px; border: 1px solid rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .ex-step-btn {
+    flex: 1; padding: 12px 8px; border: none; background: none; cursor: pointer;
+    font-family: inherit; font-size: .82rem; font-weight: 500;
+    color: var(--text-soft); border-right: 1px solid rgba(0,0,0,.07);
+    transition: all .2s; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .ex-step-btn:last-child { border-right: none; }
+  .ex-step-btn:hover { background: var(--gold-pale); color: var(--navy); }
+  .ex-step-btn.done { background: #eaf6ee; color: var(--green); }
+  .ex-step-btn.active { background: var(--navy); color: var(--gold); }
+  .ex-step-num { font-size: .68rem; opacity: .7; }
+  .ex-step-check { font-size: 12px; }
+
+  .exercise-panel { display: none; }
+  .exercise-panel.active { display: block; }
+
+  .ex-card {
+    background: var(--white); border-radius: var(--radius);
+    border: 1px solid rgba(0,0,0,.08);
+    padding: 2rem;
+  }
+  .ex-title {
+    font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--navy);
+    margin-bottom: .5rem;
+  }
+  .ex-instruction { font-size: .87rem; color: var(--text-soft); margin-bottom: 1.5rem; line-height: 1.6; border-left: 3px solid var(--gold); padding-left: .8rem; }
+
+  /* Match exercise */
+  .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:600px) { .match-grid { grid-template-columns: 1fr; } }
+  .match-col { display: flex; flex-direction: column; gap: .5rem; }
+  .match-col-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 500; color: var(--text-soft); margin-bottom: .25rem; }
+  .match-word-btn, .match-def-btn {
+    padding: 10px 14px; border-radius: 8px; border: 1.5px solid rgba(0,0,0,.1);
+    background: var(--cream); cursor: pointer; text-align: left;
+    font-family: inherit; font-size: .86rem; color: var(--text);
+    transition: all .2s; line-height: 1.45;
+  }
+  .match-word-btn:hover, .match-def-btn:hover { border-color: var(--gold); background: var(--gold-pale); }
+  .match-word-btn.selected { border-color: var(--navy); background: var(--navy); color: var(--gold); }
+  .match-word-btn.correct { border-color: var(--green); background: #eaf6ee; color: var(--green); pointer-events: none; }
+  .match-def-btn.correct { border-color: var(--green); background: #eaf6ee; color: var(--green); pointer-events: none; }
+  .match-word-btn.wrong { border-color: var(--red); background: #faeaea; color: var(--red); }
+  .match-def-btn.highlight { border-color: var(--navy); background: var(--gold-pale); animation: pulse .3s ease; }
+  @keyframes pulse { 0%,100% { transform: none; } 50% { transform: scale(1.02); } }
+
+  /* Gap fill */
+  .gap-sentence { font-size: .93rem; color: var(--text); line-height: 1.8; margin-bottom: 1rem; }
+  .gap-sentence .gap-num { font-weight: 500; color: var(--navy); margin-right: 6px; }
+  .gap-input {
+    display: inline-block; border: none; border-bottom: 2px solid var(--navy-light);
+    background: transparent; font-family: inherit; font-size: .93rem;
+    color: var(--navy); min-width: 130px; padding: 0 4px; outline: none;
+    transition: border-color .2s;
+  }
+  .gap-input:focus { border-color: var(--gold); }
+  .gap-input.correct { border-color: var(--green); color: var(--green); }
+  .gap-input.wrong { border-color: var(--red); color: var(--red); }
+  .word-bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.25rem; padding: .85rem 1rem; background: var(--gold-pale); border-radius: 8px; border: 1px solid rgba(201,168,76,.3); }
+  .bank-word {
+    padding: 4px 12px; background: var(--navy); color: var(--gold);
+    border-radius: 99px; font-size: .8rem; font-weight: 500; cursor: pointer;
+    transition: all .2s; user-select: none;
+  }
+  .bank-word:hover { background: var(--navy-light); }
+  .bank-word.used { opacity: .35; pointer-events: none; text-decoration: line-through; }
+
+  /* Discussion */
+  .discussion-list { display: flex; flex-direction: column; gap: 1rem; }
+  .discussion-item {
+    display: flex; gap: 1rem; align-items: flex-start;
+    background: var(--cream); border-radius: 10px; padding: 1rem 1.25rem;
+    border: 1px solid rgba(0,0,0,.07);
+  }
+  .discussion-num { background: var(--navy); color: var(--gold); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+  .discussion-q { font-size: .9rem; color: var(--text); line-height: 1.65; }
+  .discussion-notes {
+    margin-top: .6rem; width: 100%;
+    border: 1.5px solid rgba(0,0,0,.1); border-radius: 6px;
+    padding: 8px 10px; font-family: inherit; font-size: .85rem;
+    resize: vertical; min-height: 55px; outline: none;
+    background: var(--white); color: var(--text); transition: border-color .2s;
+  }
+  .discussion-notes:focus { border-color: var(--gold); }
+  .discussion-notes::placeholder { color: var(--text-soft); }
+
+  /* True/False */
+  .tf-list { display: flex; flex-direction: column; gap: .75rem; }
+  .tf-item { background: var(--cream); border-radius: 10px; border: 1px solid rgba(0,0,0,.07); padding: 1rem 1.25rem; }
+  .tf-stmt { font-size: .9rem; color: var(--text); margin-bottom: .75rem; line-height: 1.5; }
+  .tf-stmt .tf-num { font-weight: 500; color: var(--navy); margin-right: 6px; }
+  .tf-options { display: flex; gap: .5rem; }
+  .tf-btn {
+    padding: 6px 18px; border-radius: 6px; border: 1.5px solid rgba(0,0,0,.12);
+    background: var(--white); cursor: pointer; font-family: inherit; font-size: .83rem; font-weight: 500;
+    color: var(--text-mid); transition: all .2s;
+  }
+  .tf-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .tf-btn.selected { background: var(--navy); color: var(--white); border-color: var(--navy); }
+  .tf-btn.correct { background: #eaf6ee; color: var(--green); border-color: var(--green); }
+  .tf-btn.wrong { background: #faeaea; color: var(--red); border-color: var(--red); }
+  .tf-feedback { font-size: .8rem; margin-top: .5rem; color: var(--text-soft); }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: inherit; font-size: .88rem; font-weight: 500; transition: all .2s;
+  }
+  .btn-primary { background: var(--navy); color: var(--gold); }
+  .btn-primary:hover { background: var(--navy-mid); }
+  .btn-gold { background: var(--gold); color: var(--navy); }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline { background: transparent; border: 1.5px solid var(--navy); color: var(--navy); }
+  .btn-outline:hover { background: var(--cream); }
+  .btn-sm { padding: 7px 16px; font-size: .82rem; }
+
+  .btn-row { display: flex; gap: .75rem; align-items: center; margin-top: 1.5rem; flex-wrap: wrap; }
+
+  .score-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 99px;
+    background: var(--gold-pale); border: 1px solid var(--gold);
+    font-size: .83rem; font-weight: 500; color: var(--navy);
+  }
+
+  /* Result state */
+  .result-box {
+    background: var(--gold-pale); border: 1.5px solid var(--gold);
+    border-radius: 10px; padding: 1.25rem 1.5rem; margin-top: 1.25rem;
+    display: none;
+  }
+  .result-box.show { display: block; }
+  .result-box h4 { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--navy); margin-bottom: .4rem; }
+  .result-box p { font-size: .87rem; color: var(--text-mid); line-height: 1.6; }
+
+  /* ── FOOTER ───────────────────────────────────────────── */
+  .page-footer {
+    text-align: center; padding: 2rem 1rem 2.5rem;
+    font-size: .78rem; color: var(--text-soft); border-top: 1px solid rgba(0,0,0,.07);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Borat — Language Study</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('info')">Film &amp; Vocab</button>
+    <button class="nav-tab" onclick="showPage('exercises')">Exercises</button>
+  </div>
+  <div class="nav-progress">
+    <span id="progress-label">0 / 4 done</span>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════ INFO PAGE -->
+<div id="page-info" class="page active">
+
+  <div class="hero">
+    <div class="hero-bg-img"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Pre-watching handout</div>
+      <h1 class="hero-title">Borat: <em>Cultural Learnings</em> of America</h1>
+      <p class="hero-sub">A language &amp; culture preparation guide for watching the 2006 satirical film directed by Larry Charles and starring Sacha Baron Cohen.</p>
+      <div class="hero-chips">
+        <div class="hero-chip">Satire</div>
+        <div class="hero-chip">Mockumentary</div>
+        <div class="hero-chip">Cultural humour</div>
+        <div class="hero-chip">B2–C1 vocabulary</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="film-grid">
+      <div class="info-card">
+        <img class="info-card-img" src="https://fwcdn.pl/fpo/13/83/291383/7535967_2.3.jpg" alt="Borat film still" onerror="this.style.display='none'">
+        <div class="info-card-body">
+          <div class="info-card-label">The Film</div>
+          <div class="info-card-title">Borat (2006)</div>
+          <p class="info-card-text">A mockumentary following fictional Kazakh journalist Borat Sagdiyev as he travels across the USA. Directed by Larry Charles, starring Sacha Baron Cohen. Won a Golden Globe. Controversial, beloved, and deeply satirical.</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <img class="info-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Borat_in_Cologne.jpg/250px-Borat_in_Cologne.jpg" alt="Sacha Baron Cohen as Borat" onerror="this.style.display='none'">
+        <div class="info-card-body">
+          <div class="info-card-label">The Character</div>
+          <div class="info-card-title">Borat Sagdiyev</div>
+          <p class="info-card-text">A fictional journalist performed by British comedian Sacha Baron Cohen. Real people are interviewed without knowing they are part of a satirical film — their unscripted reactions reveal real social attitudes.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-block">
+      <h3>Why does it matter?</h3>
+      <p>Borat uses the device of a <strong>naïve outsider</strong> to expose prejudices that Americans might never voice openly. When people believe they are talking to a genuine — if strange — foreign journalist, they let down their guard. The <strong>irony</strong> is that Borat's own exaggerated offensive views become a mirror: audiences laugh <em>at</em> Borat, but the real joke is on the people who agree with him.</p>
+    </div>
+
+    <!-- VOCAB -->
+    <h2 class="section-title">Key <span>vocabulary</span></h2>
+    <div class="vocab-search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" class="vocab-search" id="vocab-search" placeholder="Search vocabulary…" oninput="filterVocab(this.value)">
+    </div>
+    <div class="vocab-grid" id="vocab-grid"></div>
+
+    <h2 class="section-title" style="margin-top:2.5rem">Useful <span>phrases</span></h2>
+    <div class="phrases-list" id="phrases-list"></div>
+
+  </div>
+  <div class="page-footer">This material is prepared for educational language learning purposes. Borat (2006) contains strong language and adult themes used as satire. For mature learners with teacher guidance.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ EXERCISES PAGE -->
+<div id="page-exercises" class="page">
+
+  <div class="ex-hero">
+    <div class="ex-hero-bg"></div>
+    <div class="ex-hero-content">
+      <h2>Exercises — <em>test yourself</em></h2>
+      <p>Complete all four exercises before you watch. Click a step to jump between them, or work through in order. Your progress is tracked above.</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="ex-steps-bar">
+      <button class="ex-step-btn active" onclick="showEx(0)" id="step-0">
+        <span class="ex-step-num">Exercise A</span>
+        <span>Matching</span>
+        <span class="ex-step-check" id="check-0"></span>
+      </button>
+      <button class="ex-step-btn" onclick="showEx(1)" id="step-1">
+        <span class="ex-step-num">Exercise B</span>
+        <span>Gap fill</span>
+        <span class="ex-step-check" id="check-1"></span>
+      </button>
+      <button class="ex-step-btn" onclick="showEx(2)" id="step-2">
+        <span class="ex-step-num">Exercise C</span>
+        <span>Discussion</span>
+        <span class="ex-step-check" id="check-2"></span>
+      </button>
+      <button class="ex-step-btn" onclick="showEx(3)" id="step-3">
+        <span class="ex-step-num">Exercise D</span>
+        <span>True / False</span>
+        <span class="ex-step-check" id="check-3"></span>
+      </button>
+    </div>
+
+    <!-- ── A: MATCHING ── -->
+    <div class="exercise-panel active" id="ex-0">
+      <div class="ex-card">
+        <div class="ex-title">Exercise A — Matching</div>
+        <div class="ex-instruction">Click a <strong>word</strong> on the left, then click its correct <strong>definition</strong> on the right. All eight pairs must be matched.</div>
+        <div class="match-grid">
+          <div class="match-col">
+            <div class="match-col-label">Words</div>
+            <div id="match-words"></div>
+          </div>
+          <div class="match-col">
+            <div class="match-col-label">Definitions</div>
+            <div id="match-defs"></div>
+          </div>
+        </div>
+        <div class="result-box" id="match-result">
+          <h4 id="match-result-title"></h4>
+          <p id="match-result-msg"></p>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="checkMatch()">Check answers</button>
+          <button class="btn btn-outline btn-sm" onclick="resetMatch()">Reset</button>
+          <span class="score-badge" id="match-score" style="display:none"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── B: GAP FILL ── -->
+    <div class="exercise-panel" id="ex-1">
+      <div class="ex-card">
+        <div class="ex-title">Exercise B — Fill in the gaps</div>
+        <div class="ex-instruction">Click a word from the word bank to insert it, or type directly into the blank. Use each word once only.</div>
+        <div class="word-bank" id="word-bank"></div>
+        <div id="gap-sentences"></div>
+        <div class="result-box" id="gap-result">
+          <h4 id="gap-result-title"></h4>
+          <p id="gap-result-msg"></p>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="checkGap()">Check answers</button>
+          <button class="btn btn-outline btn-sm" onclick="resetGap()">Reset</button>
+          <span class="score-badge" id="gap-score" style="display:none"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── C: DISCUSSION ── -->
+    <div class="exercise-panel" id="ex-2">
+      <div class="ex-card">
+        <div class="ex-title">Exercise C — Discussion</div>
+        <div class="ex-instruction">Think about each question before you watch. Jot down notes in the box — there are no wrong answers. You'll discuss these with your teacher.</div>
+        <div class="discussion-list" id="discussion-list"></div>
+        <div class="btn-row">
+          <button class="btn btn-gold" onclick="markDiscussionDone()">Mark as done ✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── D: TRUE/FALSE ── -->
+    <div class="exercise-panel" id="ex-3">
+      <div class="ex-card">
+        <div class="ex-title">Exercise D — True, False, or Not Given?</div>
+        <div class="ex-instruction">Based on what you've read in the vocabulary section, decide whether each statement is True (T), False (F), or Not Given (NG) — information not mentioned at all.</div>
+        <div class="tf-list" id="tf-list"></div>
+        <div class="result-box" id="tf-result">
+          <h4 id="tf-result-title"></h4>
+          <p id="tf-result-msg"></p>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="checkTF()">Check answers</button>
+          <button class="btn btn-outline btn-sm" onclick="resetTF()">Reset</button>
+          <span class="score-badge" id="tf-score" style="display:none"></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="page-footer">This material is for educational purposes. Borat (2006) contains strong language and adult themes used as satire. Recommended for mature learners with teacher guidance.</div>
+</div>
+
+<script>
+const VOCAB = [
+  { word:"mockumentary", pos:"noun", def:"A film made in the style of a documentary but about fictional or exaggerated events.", ex:'"Borat is a mockumentary — it looks like a real documentary but everything is staged."', note:"The suffix -mentary comes from 'documentary'. Mock = to imitate or make fun of." },
+  { word:"satire", pos:"noun", def:"The use of humour, irony, or exaggeration to criticise people or society.", ex:'"The film uses satire to expose racism and sexism that real Americans express on camera."', note:"Satirical (adj). A satirist is a person who writes or performs satire." },
+  { word:"irony", pos:"noun", def:"When words or situations mean the opposite of what is literally stated; often humorous.", ex:'"The irony is that Borat\'s offensive views make other characters reveal their own prejudices."', note:"Ironic (adj). Don't confuse with sarcasm, which is usually mean-spirited." },
+  { word:"naïve", pos:"adjective", def:"Showing a lack of experience or wisdom; too trusting or simple in judgement.", ex:'"Borat plays a naïve foreigner who doesn\'t understand American customs."', note:"Also spelled 'naive' without the accent. Pronounced: ny-EEV." },
+  { word:"prejudice", pos:"noun", def:"An unfair opinion or feeling formed without enough knowledge or reason.", ex:'"The film reveals the prejudice of some real people who don\'t realise they\'re being filmed."', note:"Prejudiced (adj). Pre- = before; judice = judgement. Related: discrimination, bias." },
+  { word:"stereotype", pos:"noun", def:"A fixed, oversimplified idea about a group of people.", ex:'"Borat\'s character is built on stereotypes of Eastern Europeans."', note:"To stereotype (verb). Stereotypical (adj). Often used in discussions of race and gender." },
+  { word:"cringe", pos:"verb / noun", def:"To feel embarrassment or disgust, often on behalf of someone else.", ex:'"Some scenes are so awkward they make you cringe and laugh at the same time."', note:"Cringe comedy = humour based on embarrassment. Very common in British and American comedy." },
+  { word:"candid", pos:"adjective", def:"Truthful and straightforward; in filming, recording people without their knowledge.", ex:'"Many scenes are candid — the people Borat meets don\'t know they\'re in a film."', note:"Candid camera = a hidden camera. Related: spontaneous, unscripted, unrehearsed." },
+  { word:"etiquette", pos:"noun", def:"The conventional rules about polite social behaviour in a particular society.", ex:'"Borat constantly breaks American etiquette, causing awkward reactions."', note:"From French. Used for social manners, professional behaviour, or formal occasions." },
+  { word:"awkward", pos:"adjective", def:"Causing or feeling embarrassment or social discomfort; clumsy in social situations.", ex:'"The dinner party scene is incredibly awkward — nobody knows how to react to Borat."', note:"Awkwardness (noun). Very common in everyday English conversation." },
+  { word:"consent", pos:"noun", def:"Voluntary agreement to something; in filming, agreeing to be recorded.", ex:'"The people gave consent, but often didn\'t fully understand the context."', note:"To consent (verb). Informed consent = full understanding before agreeing." },
+  { word:"xenophobia", pos:"noun", def:"Fear or dislike of people from other countries or cultures.", ex:'"The film exposes xenophobia by showing how some Americans react to a foreign visitor."', note:"Xeno- = foreign; -phobia = fear. Related: racism, nationalism, bigotry." },
+];
+
+const PHRASES = [
+  { tag:"catchphrase", phrase:"Very nice!", meaning:"Borat's signature expression of ironic enthusiasm — used approvingly or sarcastically to comment on something." },
+  { tag:"catchphrase", phrase:"I like!", meaning:"Borat's simple approval phrase. Note the non-native grammar: the subject pronoun 'it' is missing." },
+  { tag:"slang (90s–00s)", phrase:"…not", meaning:"Added at the end of a sentence to reverse it. E.g. 'Great idea… NOT.' Common in 1990s–2000s American slang." },
+  { tag:"catchphrase", phrase:"Great success!", meaning:"Borat's phrase for celebrating an achievement. Now used sarcastically in internet culture." },
+  { tag:"idiom", phrase:"to take at face value", meaning:"To accept what someone says literally, without questioning deeper meaning or hidden intent." },
+  { tag:"idiom", phrase:"to play dumb", meaning:"To pretend not to understand something, often to provoke a reaction from others." },
+  { tag:"idiom", phrase:"to be in on the joke", meaning:"To know that something is meant as humour. The real people Borat interviews are NOT in on the joke." },
+  { tag:"idiom", phrase:"fish out of water", meaning:"Someone who is in an unfamiliar or uncomfortable situation — exactly Borat's role in America." },
+  { tag:"collocation", phrase:"to expose someone", meaning:"To reveal the truth about a person, especially something they wanted to keep hidden." },
+  { tag:"register", phrase:"politically incorrect", meaning:"Language or behaviour considered offensive or insensitive to certain social groups." },
+];
+
+const MATCH_PAIRS = [
+  { word:"mockumentary", def:"A film imitating documentary style for comic effect" },
+  { word:"satire", def:"Use of irony to criticise society" },
+  { word:"candid", def:"Filmed without the subject's knowledge; honest" },
+  { word:"etiquette", def:"Rules of polite social behaviour" },
+  { word:"xenophobia", def:"Fear or dislike of people from foreign countries" },
+  { word:"consent", def:"Agreement to participate in something" },
+  { word:"stereotype", def:"A fixed, oversimplified idea about a group" },
+  { word:"naïve", def:"Lacking experience or wisdom; too trusting" },
+];
+
+const GAP_DATA = [
+  { sentence:"The documentary was intended as ___ of American culture, not a genuine travel film.", answer:"satire" },
+  { sentence:"There is a painful ___ in the scene: Borat acts offensively, but the audience laughs at the hosts.", answer:"irony" },
+  { sentence:"Many people find the film hard to watch — it's so uncomfortable it makes you ___.", answer:"cringe" },
+  { sentence:"The journalist wanted to ___ the racism that people express in private.", answer:"expose" },
+  { sentence:"Not everyone gave informed ___; some didn't realise the footage would be used publicly.", answer:"consent" },
+  { sentence:"Saying someone is good at maths because they're Asian is a harmful ___.", answer:"stereotype" },
+  { sentence:"The dinner scene was deeply ___ — nobody knew how to react to his behaviour.", answer:"awkward" },
+  { sentence:"The film reveals the ___ that some people hide in everyday conversation.", answer:"prejudice" },
+];
+
+const DISCUSS_QS = [
+  "What is the difference between making a joke about a group of people and using humour to criticise prejudice? Is there a clear line?",
+  "If a film-maker tricks real people into saying offensive things on camera, is that ethical? Why / why not?",
+  "Can offensive humour ever make society better? How?",
+  "What stereotypes about your own culture have you seen in films or on TV? How did they make you feel?",
+  "Borat pretends to be from Kazakhstan. Do you think Kazakhstani people found this film funny? Why might they have objected?",
+  "What does it mean for a joke to 'punch up' rather than 'punch down'? Can you think of examples?",
+];
+
+const TF_DATA = [
+  { stmt:"Borat is a real journalist from Kazakhstan.", answer:"F", feedback:"False — Borat is a fictional character created by British comedian Sacha Baron Cohen." },
+  { stmt:"The film uses satire to comment on American society.", answer:"T", feedback:"True — the film is widely understood as a satirical critique of American attitudes and prejudices." },
+  { stmt:"All the people filmed gave full informed consent.", answer:"F", feedback:"False — many interviewees did not realise the full satirical context of the film." },
+  { stmt:"Sacha Baron Cohen is British.", answer:"NG", feedback:"Not Given — the handout doesn't state his nationality (though it's true — he is British)." },
+  { stmt:"Candid filming means people know they are being recorded.", answer:"F", feedback:"False — candid filming means the opposite: people do NOT know they are being recorded." },
+  { stmt:"The film was a box office failure.", answer:"NG", feedback:"Not Given — the handout doesn't mention box office performance (in fact it was a huge success)." },
+  { stmt:"Satire can be used to expose prejudice.", answer:"T", feedback:"True — this is explicitly stated in the handout's introduction." },
+];
+
+// ─── STATE ────────────────────────────────────────────────
+let exDone = [false, false, false, false];
+let selectedWord = null;
+let matchedPairs = 0;
+let wordMatchState = {};
+let defMatchState = {};
+
+// ─── RENDER VOCAB ─────────────────────────────────────────
+function renderVocab() {
+  const grid = document.getElementById('vocab-grid');
+  grid.innerHTML = VOCAB.map((v,i) => `
+    <div class="vocab-card" id="vc-${i}" onclick="toggleVocab(${i})">
+      <div class="vocab-arrow">▾</div>
+      <div class="vocab-word">${v.word}</div>
+      <div class="vocab-pos">${v.pos}</div>
+      <div class="vocab-definition">${v.def}</div>
+      <div class="vocab-expand">
+        <div class="vocab-example">${v.ex}</div>
+        <div class="vocab-note">${v.note}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleVocab(i) {
+  document.getElementById('vc-'+i).classList.toggle('open');
+}
+
+function filterVocab(q) {
+  q = q.toLowerCase();
+  VOCAB.forEach((v,i) => {
+    const el = document.getElementById('vc-'+i);
+    const match = v.word.toLowerCase().includes(q) || v.def.toLowerCase().includes(q) || v.pos.toLowerCase().includes(q);
+    el.style.display = match ? '' : 'none';
+  });
+}
+
+// ─── RENDER PHRASES ───────────────────────────────────────
+function renderPhrases() {
+  document.getElementById('phrases-list').innerHTML = PHRASES.map(p => `
+    <div class="phrase-row">
+      <span class="phrase-tag">${p.tag}</span>
+      <div class="phrase-text"><strong>${p.phrase}</strong><span>${p.meaning}</span></div>
+    </div>
+  `).join('');
+}
+
+// ─── MATCHING EXERCISE ─────────────────────────────────────
+function renderMatch() {
+  const shuffledDefs = [...MATCH_PAIRS].map(p=>p.def).sort(()=>Math.random()-.5);
+  document.getElementById('match-words').innerHTML = MATCH_PAIRS.map((p,i) =>
+    `<button class="match-word-btn" id="mw-${i}" onclick="selectWord(${i})">${p.word}</button>`
+  ).join('');
+  document.getElementById('match-defs').innerHTML = shuffledDefs.map((d,i) =>
+    `<button class="match-def-btn" id="md-${i}" data-def="${d}" onclick="selectDef(${i})">${d}</button>`
+  ).join('');
+  matchedPairs = 0; selectedWord = null; wordMatchState = {}; defMatchState = {};
+}
+
+function selectWord(i) {
+  if (wordMatchState[i] === 'correct') return;
+  document.querySelectorAll('.match-word-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('mw-'+i).classList.add('selected');
+  selectedWord = i;
+}
+
+function selectDef(j) {
+  if (selectedWord === null) return;
+  const defBtn = document.getElementById('md-'+j);
+  if (defMatchState[j] === 'correct') return;
+  const chosenDef = defBtn.dataset.def;
+  const correctDef = MATCH_PAIRS[selectedWord].def;
+  if (chosenDef === correctDef) {
+    document.getElementById('mw-'+selectedWord).classList.remove('selected');
+    document.getElementById('mw-'+selectedWord).classList.add('correct');
+    defBtn.classList.add('correct');
+    wordMatchState[selectedWord] = 'correct';
+    defMatchState[j] = 'correct';
+    matchedPairs++;
+    selectedWord = null;
+    if (matchedPairs === MATCH_PAIRS.length) {
+      showMatchResult(MATCH_PAIRS.length, MATCH_PAIRS.length);
+    }
+  } else {
+    document.getElementById('mw-'+selectedWord).classList.add('wrong');
+    defBtn.classList.add('highlight');
+    setTimeout(() => {
+      document.getElementById('mw-'+selectedWord).classList.remove('wrong','selected');
+      defBtn.classList.remove('highlight');
+      selectedWord = null;
+    }, 700);
+  }
+}
+
+function checkMatch() {
+  const correct = Object.values(wordMatchState).filter(v=>v==='correct').length;
+  showMatchResult(correct, MATCH_PAIRS.length);
+}
+
+function showMatchResult(correct, total) {
+  const box = document.getElementById('match-result');
+  const title = document.getElementById('match-result-title');
+  const msg = document.getElementById('match-result-msg');
+  const score = document.getElementById('match-score');
+  box.classList.add('show');
+  score.style.display = 'inline-flex';
+  score.textContent = `${correct} / ${total}`;
+  if (correct === total) {
+    title.textContent = 'Perfect! All matched correctly.';
+    msg.textContent = 'Excellent vocabulary knowledge — you\'re well prepared for the film.';
+    markDone(0);
+  } else {
+    title.textContent = `${correct} out of ${total} correct.`;
+    msg.textContent = 'Review the vocabulary cards and try again.';
+  }
+}
+
+function resetMatch() {
+  document.getElementById('match-result').classList.remove('show');
+  document.getElementById('match-score').style.display = 'none';
+  renderMatch();
+}
+
+// ─── GAP FILL ─────────────────────────────────────────────
+function renderGap() {
+  const bank = document.getElementById('word-bank');
+  const shuffled = [...GAP_DATA].map(g=>g.answer).sort(()=>Math.random()-.5);
+  bank.innerHTML = shuffled.map(w =>
+    `<span class="bank-word" id="bank-${w}" onclick="insertWord('${w}')">${w}</span>`
+  ).join('');
+  document.getElementById('gap-sentences').innerHTML = GAP_DATA.map((g,i) => {
+    const parts = g.sentence.split('___');
+    return `<div class="gap-sentence"><span class="gap-num">${i+1}.</span>${parts[0]}<input class="gap-input" id="gap-${i}" data-answer="${g.answer}" placeholder="…" oninput="syncBank(${i})" autocomplete="off">${parts[1] || ''}</div>`;
+  }).join('');
+}
+
+let activeGapIdx = null;
+function insertWord(w) {
+  const focused = document.activeElement;
+  if (focused && focused.classList.contains('gap-input')) {
+    activeGapIdx = parseInt(focused.id.split('-')[1]);
+  }
+  if (activeGapIdx !== null) {
+    const inp = document.getElementById('gap-'+activeGapIdx);
+    if (!inp.classList.contains('correct')) {
+      inp.value = w;
+      document.getElementById('bank-'+w).classList.add('used');
+    }
+  }
+}
+
+function syncBank(i) {
+  const inp = document.getElementById('gap-'+i);
+  activeGapIdx = i;
+  inp.classList.remove('correct','wrong');
+  GAP_DATA.forEach(g => {
+    const b = document.getElementById('bank-'+g.answer);
+    if (b) b.classList.remove('used');
+  });
+  GAP_DATA.forEach((g,j) => {
+    const v = document.getElementById('gap-'+j).value.trim().toLowerCase();
+    if (v === g.answer) {
+      const b = document.getElementById('bank-'+g.answer);
+      if (b) b.classList.add('used');
+    }
+  });
+}
+
+function checkGap() {
+  let correct = 0;
+  GAP_DATA.forEach((g,i) => {
+    const inp = document.getElementById('gap-'+i);
+    const val = inp.value.trim().toLowerCase();
+    inp.classList.remove('correct','wrong');
+    if (val === g.answer) { inp.classList.add('correct'); correct++; }
+    else { inp.classList.add('wrong'); }
+  });
+  const box = document.getElementById('gap-result');
+  const score = document.getElementById('gap-score');
+  box.classList.add('show');
+  score.style.display = 'inline-flex';
+  score.textContent = `${correct} / ${GAP_DATA.length}`;
+  document.getElementById('gap-result-title').textContent = correct === GAP_DATA.length ? 'All correct!' : `${correct} out of ${GAP_DATA.length} correct.`;
+  document.getElementById('gap-result-msg').textContent = correct === GAP_DATA.length ? 'Great — you know these words in context.' : 'Red boxes show wrong answers. Check the vocabulary section and try again.';
+  if (correct === GAP_DATA.length) markDone(1);
+}
+
+function resetGap() {
+  document.getElementById('gap-result').classList.remove('show');
+  document.getElementById('gap-score').style.display = 'none';
+  activeGapIdx = null;
+  renderGap();
+}
+
+// ─── DISCUSSION ───────────────────────────────────────────
+function renderDiscussion() {
+  document.getElementById('discussion-list').innerHTML = DISCUSS_QS.map((q,i) => `
+    <div class="discussion-item">
+      <div class="discussion-num">${i+1}</div>
+      <div style="flex:1">
+        <div class="discussion-q">${q}</div>
+        <textarea class="discussion-notes" placeholder="Your notes…"></textarea>
+      </div>
+    </div>
+  `).join('');
+}
+
+function markDiscussionDone() {
+  markDone(2);
+  document.querySelector('#step-2').style.pointerEvents = 'auto';
+}
+
+// ─── TRUE/FALSE ────────────────────────────────────────────
+function renderTF() {
+  document.getElementById('tf-list').innerHTML = TF_DATA.map((item,i) => `
+    <div class="tf-item" id="tf-item-${i}">
+      <div class="tf-stmt"><span class="tf-num">${i+1}.</span>${item.stmt}</div>
+      <div class="tf-options">
+        <button class="tf-btn" onclick="selectTF(${i},'T')">T</button>
+        <button class="tf-btn" onclick="selectTF(${i},'F')">F</button>
+        <button class="tf-btn" onclick="selectTF(${i},'NG')">NG</button>
+      </div>
+      <div class="tf-feedback" id="tf-fb-${i}"></div>
+    </div>
+  `).join('');
+}
+
+function selectTF(i, val) {
+  const btns = document.querySelectorAll(`#tf-item-${i} .tf-btn`);
+  btns.forEach(b => b.classList.remove('selected'));
+  btns.forEach(b => { if(b.textContent === val) b.classList.add('selected'); });
+}
+
+function checkTF() {
+  let correct = 0;
+  TF_DATA.forEach((item,i) => {
+    const btns = document.querySelectorAll(`#tf-item-${i} .tf-btn`);
+    const fb = document.getElementById('tf-fb-'+i);
+    btns.forEach(b => {
+      b.classList.remove('correct','wrong');
+      if (b.classList.contains('selected')) {
+        if (b.textContent === item.answer) { b.classList.add('correct'); correct++; }
+        else { b.classList.add('wrong'); }
+      }
+    });
+    fb.textContent = item.feedback;
+  });
+  const box = document.getElementById('tf-result');
+  const score = document.getElementById('tf-score');
+  box.classList.add('show');
+  score.style.display = 'inline-flex';
+  score.textContent = `${correct} / ${TF_DATA.length}`;
+  document.getElementById('tf-result-title').textContent = correct >= 6 ? 'Excellent!' : `${correct} out of ${TF_DATA.length} correct.`;
+  document.getElementById('tf-result-msg').textContent = correct >= 6 ? 'You clearly read the material carefully.' : 'Read the explanations under each item, then re-read the vocabulary section.';
+  if (correct >= 5) markDone(3);
+}
+
+function resetTF() {
+  document.getElementById('tf-result').classList.remove('show');
+  document.getElementById('tf-score').style.display = 'none';
+  renderTF();
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────
+function showPage(p) {
+  ['info','exercises'].forEach(id => {
+    document.getElementById('page-'+id).classList.toggle('active', id===p);
+  });
+  document.querySelectorAll('.nav-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['info','exercises'][i]===p);
+  });
+}
+
+let currentEx = 0;
+function showEx(n) {
+  document.querySelectorAll('.exercise-panel').forEach((p,i) => p.classList.toggle('active', i===n));
+  document.querySelectorAll('.ex-step-btn').forEach((b,i) => b.classList.toggle('active', i===n));
+  currentEx = n;
+}
+
+function markDone(n) {
+  exDone[n] = true;
+  const step = document.getElementById('step-'+n);
+  step.classList.add('done');
+  step.classList.remove('active');
+  document.getElementById('check-'+n).textContent = '✓';
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = exDone.filter(Boolean).length;
+  document.getElementById('progress-label').textContent = `${done} / 4 done`;
+  document.getElementById('progress-fill').style.width = (done/4*100)+'%';
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+renderVocab();
+renderPhrases();
+renderMatch();
+renderGap();
+renderDiscussion();
+renderTF();
+</script>
+</body>
+</html>
